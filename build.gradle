@@ -33,11 +33,13 @@ if (operatingSystemName.contains("windows")) {
     systemClassifier = "windows"
 } else if (operatingSystemName.contains("linux")) {
     systemClassifier = "linux"
+} else if (operatingSystemName.contains("mac")) {
+    systemClassifier = "macos"
 } else {
     throw new GradleException("Unsupported operating system: ${System.getProperty('os.name')}")
 }
 def artifactBaseName = "${project.archives_base_name}-${project.version}${profilerSuffix}-fabric-${project.minecraft_version}-${systemClassifier}"
-def nativeLibraryName = systemClassifier == "windows" ? "core.dll" : "libcore.so"
+def nativeLibraryName = systemClassifier == "windows" ? "core.dll" : (systemClassifier == "macos" ? "libcore.dylib" : "libcore.so")
 def nativeLibraryFile = file("src/main/resources/${nativeLibraryName}")
 def nativeProfilerMarkers = [
     "Java_com_radiance_client_profiler_Profiler_nativeIsAvailable",
@@ -401,7 +403,7 @@ jar {
         exclude "com/radiance/mixins/opengl_ui/**"
     }
     from("LICENCE") {
-        rename { "${it}_${project.archivesBaseName}" }
+        rename { "${it}_${base.archivesName.get()}" }
     }
 }
 

@@ -48,7 +48,9 @@ public class Pipeline {
     private static final String MAIN_RENDER_SHADER_PACK_PATH_ATTRIBUTE = "render_pipeline.module.main_render.attribute.shader_pack_path";
     private static final String ADVANCED_RAY_TRACING_SHADER_PACK_PATH = "shaders/world/ray_tracing/advanced.zip";
     private static final String VANILLA_RAY_TRACING_SHADER_PACK_PATH = "shaders/world/ray_tracing/vanilla-pt.zip";
-    private static final String DEFAULT_RAY_TRACING_SHADER_PACK_PATH = ADVANCED_RAY_TRACING_SHADER_PACK_PATH;
+    private static final String DEFAULT_RAY_TRACING_SHADER_PACK_PATH =
+            System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT).contains("mac")
+                    ? VANILLA_RAY_TRACING_SHADER_PACK_PATH : ADVANCED_RAY_TRACING_SHADER_PACK_PATH;
     private static final String EMISSION_FALLBACK_RAY_TRACING_SHADER_PACK_PATH = VANILLA_RAY_TRACING_SHADER_PACK_PATH;
     private static final String INTERNAL_RAY_TRACING_SHADER_PACK_PATH = DEFAULT_RAY_TRACING_SHADER_PACK_PATH;
     private static final String INTERNAL_SHADER_PACK_DIRECTORY = "shaders/world/ray_tracing";

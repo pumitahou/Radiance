@@ -84,6 +84,10 @@ public class RadianceClient implements ClientModInitializer {
             copyFileFromResource(soTargetPath, soResourcePath);
 
             System.load(soTargetPath.toAbsolutePath().toString());
+        } else if (operatingSystemName.toLowerCase().contains("mac")) {
+            Path dylibTargetPath = radianceDir.resolve("libcore.dylib");
+            copyFileFromResource(dylibTargetPath, Path.of("libcore.dylib"));
+            System.load(dylibTargetPath.toAbsolutePath().toString());
         } else {
             throw new RuntimeException("The OS " + operatingSystemName + " is not supported");
         }
