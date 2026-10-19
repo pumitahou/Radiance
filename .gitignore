@@ -125,3 +125,7 @@ libnvidia-ngx-dlss*
 include/
 shaders/
 libxess*
+# macOS port build outputs
+.DS_Store
+._*
+libcore.dylib
