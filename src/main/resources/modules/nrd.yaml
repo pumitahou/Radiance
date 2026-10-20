@@ -41,6 +41,8 @@ inputImageConfigs:
   # Data used only when composing the denoised signals into final radiance.
   - name: "compose_clear_radiance"
     format: "R16G16B16A16_SFLOAT"
+  - name: "compose_first_hit_refraction"
+    format: "R16G16B16A16_SFLOAT"
   - name: "compose_base_emission"
     format: "R16G16B16A16_SFLOAT"
   - name: "compose_fog"

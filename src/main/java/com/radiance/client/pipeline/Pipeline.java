@@ -93,6 +93,7 @@ public class Pipeline {
             Map.entry("motion_vector", "indirect_guide_motion"),
             Map.entry("linear_depth", "indirect_guide_depth"),
             Map.entry("first_hit_clear", "compose_clear_radiance"),
+            Map.entry("first_hit_refraction", "compose_first_hit_refraction"),
             Map.entry("first_hit_base_emission", "compose_base_emission"),
             Map.entry("fog_image", "compose_fog"),
             Map.entry("diffuse_hit_distance", "indirect_diffuse_hit_distance"),
@@ -1338,6 +1339,8 @@ public class Pipeline {
 
         connect(mainRenderModule.getOutputImageConfig("first_hit_clear"),
                 denoiserModule.getInputImageConfig("compose_clear_radiance"));
+        connect(mainRenderModule.getOutputImageConfig("first_hit_refraction"),
+                denoiserModule.getInputImageConfig("compose_first_hit_refraction"));
         connect(mainRenderModule.getOutputImageConfig("first_hit_base_emission"),
                 denoiserModule.getInputImageConfig("compose_base_emission"));
         connect(mainRenderModule.getOutputImageConfig("fog_image"),
@@ -2775,7 +2778,8 @@ public class Pipeline {
             }
 
             if (moduleConnections == null) {
-                return migrated;
+                moduleConnections = new ArrayList<>();
+                migrated = true;
             }
             for (StoredConnection connection : moduleConnections) {
                 if (connection == null) {
@@ -2795,6 +2799,32 @@ public class Pipeline {
                     migrated = true;
                 }
             }
+
+            Set<String> connectedRefractionInputs = new HashSet<>();
+            for (StoredConnection connection : moduleConnections) {
+                if (connection != null && Objects.equals(connection.dstImageName, "compose_first_hit_refraction")) {
+                    connectedRefractionInputs.add(connection.dstModuleId);
+                }
+            }
+            List<StoredConnection> refractionConnectionsToAdd = new ArrayList<>();
+            for (StoredConnection clearConnection : moduleConnections) {
+                if (clearConnection == null ||
+                        !Objects.equals(moduleNames.get(clearConnection.srcModuleId), MAIN_RENDER_MODULE_NAME) ||
+                        !Objects.equals(moduleNames.get(clearConnection.dstModuleId), NRD_MODULE_NAME) ||
+                        !Objects.equals(clearConnection.dstImageName, "compose_clear_radiance") ||
+                        !connectedRefractionInputs.add(clearConnection.dstModuleId)) {
+                    continue;
+                }
+
+                StoredConnection refractionConnection = new StoredConnection();
+                refractionConnection.srcModuleId = clearConnection.srcModuleId;
+                refractionConnection.srcImageName = "first_hit_refraction";
+                refractionConnection.dstModuleId = clearConnection.dstModuleId;
+                refractionConnection.dstImageName = "compose_first_hit_refraction";
+                refractionConnectionsToAdd.add(refractionConnection);
+                migrated = true;
+            }
+            moduleConnections.addAll(refractionConnectionsToAdd);
             return migrated;
         }
     }
