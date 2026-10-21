@@ -129,3 +129,6 @@ libxess*
 .DS_Store
 ._*
 libcore.dylib
+
+# Local runtime and verification logs, including rotated .log.gz files
+/logs/
