@@ -5,6 +5,7 @@ import com.radiance.client.pipeline.Module;
 import com.radiance.client.pipeline.ModuleEntry;
 import com.radiance.client.pipeline.Pipeline;
 import com.radiance.client.pipeline.Presets;
+import com.radiance.client.pipeline.RayBouncePreset;
 import com.radiance.client.pipeline.config.AttributeConfig;
 import com.radiance.client.pipeline.config.ImageConfig;
 import com.radiance.mixin_related.extensions.vulkan_render_integration.IDrawContextExt;
@@ -19,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -36,7 +38,7 @@ public class RenderPipelineScreen extends Screen {
         "R8G8B8A8_UNORM", 0xFF62E36A, "R16G16_SFLOAT", 0xFFFF6BD6, "R16_SFLOAT", 0xFF6BE6FF,
         "R16G16B16A16_SFLOAT", 0xFFFFB84E);
 
-    private static final int HEADER_HEIGHT = 32;
+    private static final int HEADER_HEIGHT = 60;
     private static final int PRESET_GROUP_HEADER_HEIGHT = 28;
     private static final int PRESET_GROUP_BOTTOM_GAP = 18;
     private static final int PRESET_ROW_HEIGHT = 22;
@@ -68,6 +70,8 @@ public class RenderPipelineScreen extends Screen {
     private int presetScrollY = 0;
     private boolean presetScrollbarDragging = false;
     private int presetScrollbarDragOffsetY = 0;
+
+    private final List<ButtonWidget> bouncePresetButtons = new ArrayList<>();
 
     private ButtonWidget modeToggleBtn;
     private ButtonWidget secondaryBtn;
@@ -118,6 +122,7 @@ public class RenderPipelineScreen extends Screen {
 
     private void rebuildUI() {
         clearChildren();
+        bouncePresetButtons.clear();
         activeSelector = null;
         activePresetSelector = null;
         presetWidgets.clear();
@@ -214,7 +219,32 @@ public class RenderPipelineScreen extends Screen {
             applyActivePreset();
         }
 
+        int bounceButtonWidth = Math.min(170, Math.max(1, (scaledW() - 30) / 3));
+        for (RayBouncePreset preset : RayBouncePreset.values()) {
+            ButtonWidget presetButton = addDrawableChild(ButtonWidget.builder(
+                Text.translatable(preset.translationKey), button -> {
+                    Pipeline.applyRayBouncePreset(preset);
+                    syncBouncePresetButtons();
+                }).dimensions(10 + bouncePresetButtons.size() * (bounceButtonWidth + 5),
+                    34, bounceButtonWidth, 20)
+                .tooltip(Tooltip.of(Text.translatable("render_pipeline.bounces.description")))
+                .build());
+            bouncePresetButtons.add(presetButton);
+        }
+        syncBouncePresetButtons();
         syncResetAllButton();
+    }
+
+    private void syncBouncePresetButtons() {
+        RayBouncePreset selected = Pipeline.getRayBouncePreset();
+        RayBouncePreset[] choices = RayBouncePreset.values();
+        for (int i = 0; i < bouncePresetButtons.size(); i++) {
+            RayBouncePreset preset = choices[i];
+            ButtonWidget button = bouncePresetButtons.get(i);
+            Text label = Text.translatable(preset.translationKey);
+            button.setMessage(selected == preset ? Text.literal("✓ ").append(label) : label);
+            button.active = Pipeline.canApplyRayBouncePreset(preset) && selected != preset;
+        }
     }
 
     public void refreshPipeline() {
@@ -298,6 +328,7 @@ public class RenderPipelineScreen extends Screen {
             node.updateWidth(textRenderer);
         }
         syncResetAllButton();
+        syncBouncePresetButtons();
 
         this.renderBackground(context, mouseX, mouseY, delta);
 

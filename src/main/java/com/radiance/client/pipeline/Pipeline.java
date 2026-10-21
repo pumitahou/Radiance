@@ -421,6 +421,55 @@ public class Pipeline {
         return attributes;
     }
 
+    private static final String RAY_BOUNCES_ATTRIBUTE =
+            "render_pipeline.module.main_render.attribute.num_ray_bounces";
+
+    public static RayBouncePreset getRayBouncePreset() {
+        AttributeConfig attribute = findAttribute(getMainRenderModule(), RAY_BOUNCES_ATTRIBUTE);
+        if (attribute != null) {
+            for (RayBouncePreset preset : RayBouncePreset.values()) {
+                if (Objects.equals(attribute.value, Integer.toString(preset.bounces))) {
+                    return preset;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static boolean canApplyRayBouncePreset(RayBouncePreset preset) {
+        AttributeConfig attribute = findAttribute(getMainRenderModule(), RAY_BOUNCES_ATTRIBUTE);
+        if (preset == null || attribute == null || attribute.type == null) {
+            return false;
+        }
+        if (attribute.type.equals("int")) {
+            return true;
+        }
+        if (attribute.type.startsWith("int_range:")) {
+            String[] limits = attribute.type.substring("int_range:".length()).split("-", -1);
+            try {
+                return limits.length == 2 && preset.bounces >= Integer.parseInt(limits[0])
+                        && preset.bounces <= Integer.parseInt(limits[1]);
+            } catch (NumberFormatException ignored) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    /** Saved and rebuilt with the other edits when leaving the pipeline screen. */
+    public static boolean applyRayBouncePreset(RayBouncePreset preset) {
+        if (!canApplyRayBouncePreset(preset)) {
+            return false;
+        }
+        Module module = getMainRenderModule();
+        boolean changed = setAttributeValue(module, findAttribute(module, RAY_BOUNCES_ATTRIBUTE),
+                Integer.toString(preset.bounces));
+        if (changed) {
+            RadianceClient.LOGGER.info("[RADIANCE-E21] ray bounce preset: {}", preset.bounces);
+        }
+        return changed;
+    }
+
     private static Path resolveShaderPackPath(String configuredPath) {
         String value = configuredPath == null ? "" : configuredPath.trim();
         Path shaderPackPath = value.isEmpty()

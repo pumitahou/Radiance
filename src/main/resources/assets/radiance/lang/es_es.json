@@ -1,0 +1,6 @@
+{
+  "render_pipeline.bounces.default": "Default · 4 rebotes",
+  "render_pipeline.bounces.balanced": "Equilibrado · 3 rebotes",
+  "render_pipeline.bounces.low": "Low · 2 rebotes",
+  "render_pipeline.bounces.description": "Cambia solo los rebotes del trazado de rayos. Se aplica al salir de esta pantalla."
+}

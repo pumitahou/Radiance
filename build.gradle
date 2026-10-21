@@ -215,6 +215,9 @@ sourceSets {
     dhCompatibilityTest {
         compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
     }
+    pipelineTest {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+    }
 }
 
 configurations { distantHorizons331TestRuntime }
@@ -623,3 +626,11 @@ tasks.register("verifyDistantHorizonsPackaging") {
 }
 
 tasks.named("check") { dependsOn tasks.named("verifyDistantHorizonsPackaging") }
+
+// Verify preset persistence without initializing Minecraft or the native renderer.
+tasks.register("verifyRayBouncePresets", JavaExec) {
+    classpath = sourceSets.pipelineTest.output + sourceSets.main.output + sourceSets.main.compileClasspath
+    mainClass = "com.radiance.client.pipeline.RayBouncePresetCheck"
+    jvmArgs "-Xverify:all"
+}
+tasks.named("check") { dependsOn tasks.named("verifyRayBouncePresets") }

@@ -257,5 +257,9 @@
   "render_pipeline.module.nrd.attribute.direct_min_hit_distance_weight.description": "Minimum RELAX hit-distance weight for direct-light spatial filtering.",
   "render_pipeline.module.nrd.attribute.direct_hit_distance_reconstruction_mode.description": "Reconstructs missing reflection hit distance used by direct-specular reprojection.",
   "render_pipeline.module.nrd.attribute.direct_enable_anti_firefly.description": "Enables RELAX anti-firefly filtering for direct lighting.",
-  "render_pipeline.module.nrd.attribute.return_history_length_instead_of_occlusion.description": "Writes history length to the output alpha channel instead of normalized occlusion."
+  "render_pipeline.module.nrd.attribute.return_history_length_instead_of_occlusion.description": "Writes history length to the output alpha channel instead of normalized occlusion.",
+  "render_pipeline.bounces.default": "Default · 4 bounces",
+  "render_pipeline.bounces.balanced": "Balanced · 3 bounces",
+  "render_pipeline.bounces.low": "Low · 2 bounces",
+  "render_pipeline.bounces.description": "Changes only the ray tracing bounce limit. Applied when leaving this screen."
 }

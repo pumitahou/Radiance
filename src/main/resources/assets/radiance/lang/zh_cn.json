@@ -257,5 +257,9 @@
   "render_pipeline.module.nrd.attribute.direct_min_hit_distance_weight.description": "直射光空间过滤使用的 RELAX 最小命中距离权重。",
   "render_pipeline.module.nrd.attribute.direct_hit_distance_reconstruction_mode.description": "重建直射高光重投影使用的缺失反射命中距离。",
   "render_pipeline.module.nrd.attribute.direct_enable_anti_firefly.description": "为直射光启用 RELAX 抗亮噪点过滤。",
-  "render_pipeline.module.nrd.attribute.return_history_length_instead_of_occlusion.description": "输出 alpha 通道写入历史长度，而不是归一化遮蔽。"
+  "render_pipeline.module.nrd.attribute.return_history_length_instead_of_occlusion.description": "输出 alpha 通道写入历史长度，而不是归一化遮蔽。",
+  "render_pipeline.bounces.default": "默认 · 4 次反弹",
+  "render_pipeline.bounces.balanced": "平衡 · 3 次反弹",
+  "render_pipeline.bounces.low": "低 · 2 次反弹",
+  "render_pipeline.bounces.description": "仅改变光线反弹次数，离开此界面时应用。"
 }
